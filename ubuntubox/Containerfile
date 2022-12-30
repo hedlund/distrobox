@@ -1,0 +1,81 @@
+FROM docker.io/library/ubuntu:22.10
+
+# Update the system
+RUN apt-get update -y && apt-get upgrade -y
+
+# Install the basics
+RUN apt-get install -y \
+  ack \
+  apt-transport-https \
+  ca-certificates \
+  curl \
+  direnv \
+  httpie \
+  telnet \
+  git \
+  git-lfs \
+  golang \
+  gpg \
+  nano \
+  nodejs \
+  npm \
+  protobuf-compiler \
+  rsync \
+  shellcheck \
+  socat \
+  tig \
+  tree \
+  unzip \
+  wget \
+  whois \
+  xsel \
+  zip
+
+# Install Visual Studio Code
+RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --batch --yes --dearmor --output /etc/apt/keyrings/packages.microsoft.gpg && \
+  echo 'deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main' | tee /etc/apt/sources.list.d/vscode.list >/dev/null && \
+  apt-get update -y && \
+  apt-get install -y code
+
+# Github CLI
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /usr/share/keyrings/githubcli-archive-keyring.gpg >/dev/null && \
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
+  apt-get update -y && \
+  apt-get install -y gh
+
+# Google Cloud SDK
+RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/google-cloud-keyring.gpg >/dev/null && \
+  echo "deb [signed-by=/usr/share/keyrings/google-cloud-keyring.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list >/dev/null && \
+  apt-get update -y && \
+  apt-get install -y google-cloud-sdk
+
+# Install envchain
+RUN apt-get install -y libreadline-dev libsecret-1-dev && \
+  git clone https://github.com/sorah/envchain.git /tmp/envchain && \
+  (cd /tmp/envchain && make && make install) && \
+  rm -rf /tmp/envchain && \
+  apt-get autoremove -y
+
+# Install Oh My Posh
+#RUN wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh && \
+#  chmod +x /usr/local/bin/oh-my-posh
+
+# Install Starship
+RUN wget -q -c https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz -C /usr/local/bin
+
+# Since $HOME is mounted to the host system, we'll avoid installing stuff there,
+# and instead do this little ugly thing
+ENV N_PREFIX=/opt/user/n
+ENV TFENV_DIR=/opt/user/tfenv
+ENV PATH=$N_PREFIX/bin:$TFENV_DIR/bin:$PATH
+RUN mkdir -p /opt/user/n && \
+  npm install -g n && \
+  n latest && \
+  git clone --depth=1 https://github.com/tfutils/tfenv.git "${TFENV_DIR}" && \
+  tfenv install latest && \
+  npm install -g newman serve yarn @go-task/cli && \
+  chown -R 1000:1000 /opt/user
+
+# Add the first time initiation script, which can be called from an init hook
+# to setup Podman/Docker inside the container, and use VSCode outside of it.
+COPY first-time-init.sh /opt/user/

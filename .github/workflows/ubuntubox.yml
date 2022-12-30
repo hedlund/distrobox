@@ -1,0 +1,59 @@
+name: build-ubuntubox
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 0 * * MON"
+env:
+  IMAGE_NAME: ubuntubox
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  build:
+    name: Build and push image
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Generate tags
+        id: tags
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          alias_tags=()
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            alias_tags+=("pr-${{ github.event.number }}")
+          else
+            echo "date=$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+            alias_tags+=("latest")
+          fi
+          echo "alias_tags=${alias_tags[*]}" >> $GITHUB_OUTPUT
+
+      - id: build
+        uses: redhat-actions/buildah-build@v2
+        with:
+          context: ${{ env.IMAGE_NAME }}
+          image: ${{ env.IMAGE_NAME }}
+          tags: |
+            ${{ steps.tags.outputs.alias_tags }}
+            ${{ steps.tags.outputs.date }}
+            ${{ steps.tags.outputs.sha_short }}
+          containerfiles: |
+            ./${{ env.IMAGE_NAME }}/Containerfile
+
+      - id: push
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build.outputs.image }}
+          tags: ${{ steps.build.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Print image url
+        run: echo "Image pushed to ${{ steps.push.outputs.registry-paths }}"
