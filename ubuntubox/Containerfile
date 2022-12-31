@@ -76,6 +76,3 @@ RUN mkdir -p /opt/user/n && \
   npm install -g newman serve yarn @go-task/cli && \
   chown -R 1000:1000 /opt/user
 
-# Add the first time initiation script, which can be called from an init hook
-# to setup Podman/Docker inside the container, and use VSCode outside of it.
-COPY first-time-init.sh /opt/user/

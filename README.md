@@ -9,5 +9,5 @@ structure and readability over minimizing the number of layers.
 ## Ubuntu
 
 ```sh
-distrobox create --name ubuntubox --image ubuntubox:latest --init-hooks "/opt/user/first-time-init.sh"
+distrobox create --name ubuntubox --image docker pull ghcr.io/hedlund/ubuntubox:latest
 ```
