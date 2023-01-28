@@ -1,35 +1,13 @@
-FROM docker.io/library/ubuntu:22.10
+FROM quay.io/toolbx-images/ubuntu-toolbox:22.10
 
 # Update the system
 RUN apt-get update -y && apt-get upgrade -y
 
-# Install the basics
-RUN apt-get install -y \
-  ack \
-  apt-transport-https \
-  ca-certificates \
-  curl \
-  direnv \
-  httpie \
-  telnet \
-  git \
-  git-lfs \
-  golang \
-  gpg \
-  nano \
-  nodejs \
-  npm \
-  protobuf-compiler \
-  rsync \
-  shellcheck \
-  socat \
-  tig \
-  tree \
-  unzip \
-  wget \
-  whois \
-  xsel \
-  zip
+# Install extra packages
+COPY extra-packages /
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+  $(cat extra-packages | xargs) && \
+  rm /extra-packages
 
 # Install Visual Studio Code
 RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --batch --yes --dearmor --output /etc/apt/keyrings/packages.microsoft.gpg && \
@@ -71,3 +49,10 @@ RUN mkdir -p /opt/user/n && \
   tfenv install latest && \
   npm install -g newman serve yarn @go-task/cli && \
   chown -R 1000:1000 /opt/user
+
+# Symlink the distrobox host process for relevant commands
+RUN ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker && \
+  ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker-compose && \
+  ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/flatpak && \
+  ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \
+  ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/rpm-ostree
