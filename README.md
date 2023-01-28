@@ -9,5 +9,5 @@ structure and readability over minimizing the number of layers.
 ## Ubuntu
 
 ```sh
-distrobox create --name ubuntubox --image docker pull ghcr.io/hedlund/ubuntubox:latest
+distrobox create --name ubuntu --image ghcr.io/hedlund/ubuntubox:latest
 ```
