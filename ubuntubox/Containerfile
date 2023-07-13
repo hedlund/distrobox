@@ -10,12 +10,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   ca-certificates \
   curl \
   direnv \
-  httpie \
-  telnet \
+  jq \
   git \
   git-lfs \
-  golang \
   gpg \
+  httpie \
   nano \
   nodejs \
   npm \
@@ -23,6 +22,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   rsync \
   shellcheck \
   socat \
+  telnet \
   tig \
   tree \
   unzip \
@@ -30,7 +30,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   whois \
   xsel \
   zip
-
+  
+ # Install latest Golang
+RUN GO_VERSION=$(curl -s https://go.dev/dl/?mode=json |jq -r '.[0].version') && \
+  curl -sL "https://go.dev/dl/${GO_VERSION}.linux-amd64.tar.gz" | tar -xz -C /usr/local
+ENV PATH=/usr/local/go/bin:$PATH
 
 # Install Visual Studio Code
 # RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --batch --yes --dearmor --output /etc/apt/keyrings/packages.microsoft.gpg && \
@@ -79,3 +83,4 @@ RUN ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/flatpak && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/rpm-ostree
+ 
