@@ -4,16 +4,39 @@ FROM quay.io/toolbx-images/ubuntu-toolbox:22.10
 RUN apt-get update -y && apt-get upgrade -y
 
 # Install extra packages
-COPY extra-packages /
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-  $(cat extra-packages | xargs) && \
-  rm /extra-packages
+  ack \
+  apt-transport-https \
+  ca-certificates \
+  curl \
+  direnv \
+  httpie \
+  telnet \
+  git \
+  git-lfs \
+  golang \
+  gpg \
+  nano \
+  nodejs \
+  npm \
+  protobuf-compiler \
+  rsync \
+  shellcheck \
+  socat \
+  tig \
+  tree \
+  unzip \
+  wget \
+  whois \
+  xsel \
+  zip
+
 
 # Install Visual Studio Code
-RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --batch --yes --dearmor --output /etc/apt/keyrings/packages.microsoft.gpg && \
-  echo 'deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main' | tee /etc/apt/sources.list.d/vscode.list >/dev/null && \
-  apt-get update -y && \
-  apt-get install -y code
+# RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --batch --yes --dearmor --output /etc/apt/keyrings/packages.microsoft.gpg && \
+#   echo 'deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main' | tee /etc/apt/sources.list.d/vscode.list >/dev/null && \
+#   apt-get update -y && \
+#   apt-get install -y code
 
 # Github CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /usr/share/keyrings/githubcli-archive-keyring.gpg >/dev/null && \
@@ -22,10 +45,10 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | t
   apt-get install -y gh
 
 # Google Cloud SDK
-RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/google-cloud-keyring.gpg >/dev/null && \
-  echo "deb [signed-by=/usr/share/keyrings/google-cloud-keyring.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list >/dev/null && \
-  apt-get update -y && \
-  apt-get install -y google-cloud-sdk
+# RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/google-cloud-keyring.gpg >/dev/null && \
+#   echo "deb [signed-by=/usr/share/keyrings/google-cloud-keyring.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee /etc/apt/sources.list.d/google-cloud-sdk.list >/dev/null && \
+#   apt-get update -y && \
+#   apt-get install -y google-cloud-sdk
 
 # Install envchain
 RUN apt-get install -y libreadline-dev libsecret-1-dev && \
