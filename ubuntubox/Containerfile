@@ -1,4 +1,4 @@
-FROM ubuntu:23.10
+FROM ubuntu:23.04
 
 # Remove apt configuration optimized for containers
 # Remove docker-gzip-indexes to help with "command-not-found"
