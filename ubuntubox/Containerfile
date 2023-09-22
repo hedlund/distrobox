@@ -1,20 +1,36 @@
-FROM quay.io/toolbx-images/ubuntu-toolbox:22.10
+FROM ubuntu:23.10
+
+# Remove apt configuration optimized for containers
+# Remove docker-gzip-indexes to help with "command-not-found"
+RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-languages
+
+# Enable myhostname nss plugin for clean hostname resolution without patching
+# hosts (at least for sudo), add it right after 'files' entry. We expect that
+# this entry is not present yet. Do this early so that package postinst (which
+# adds it too late in the order) skips this step
+RUN sed -Ei 's/^(hosts:.*)(\<files\>)\s*(.*)/\1\2 myhostname \3/' /etc/nsswitch.conf
 
 # Update the system
 RUN apt-get update -y && apt-get upgrade -y
 
 # Install extra packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+  ubuntu-minimal \
+  ubuntu-standard \
+  libnss-myhostname \
   ack \
   apt-transport-https \
   ca-certificates \
   curl \
   direnv \
+  flatpak-xdg-utils \
   jq \
   git \
   git-lfs \
+  gnupg2 \
   gpg \
   httpie \
+  keyutils \
   nano \
   nodejs \
   npm \
@@ -29,9 +45,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   wget \
   whois \
   xsel \
-  zip
-  
- # Install latest Golang
+  zip \
+  zsh
+
+# Fix empty bind-mount to clear selinuxfs (see #337)
+RUN mkdir /usr/share/empty
+
+# Add flatpak-spawn to /usr/bin
+RUN ln -s /usr/libexec/flatpak-xdg-utils/flatpak-spawn /usr/bin/
+
+# Install latest Golang
 RUN GO_VERSION=$(curl -s https://go.dev/dl/?mode=json |jq -r '.[0].version') && \
   curl -sL "https://go.dev/dl/${GO_VERSION}.linux-amd64.tar.gz" | tar -xz -C /usr/local
 ENV PATH=/usr/local/go/bin:$PATH
@@ -53,7 +76,6 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
   curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
   apt-get update -y && \
   apt-get install -y google-cloud-cli
-      
 
 # Install envchain
 RUN apt-get install -y libreadline-dev libsecret-1-dev && \
@@ -84,4 +106,3 @@ RUN ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/flatpak && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/rpm-ostree
- 
