@@ -48,7 +48,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   zip \
   zsh
 
-# Fix empty bind-mount to clear selinuxfs (see #337)
+# Fix empty bind-mount to clear selinuxfs
 RUN mkdir /usr/share/empty
 
 # Add flatpak-spawn to /usr/bin
