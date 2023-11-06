@@ -84,6 +84,12 @@ RUN apt-get install -y libreadline-dev libsecret-1-dev && \
   rm -rf /tmp/envchain && \
   apt-get autoremove -y
 
+# Install tflint
+RUN TFLINT_VERSION=$(curl --fail -s "https://api.github.com/repos/terraform-linters/tflint/releases/latest" | jq -r '.tag_name') && \
+  curl --fail -sS -L -o /tmp/tflint.zip "https://github.com/terraform-linters/tflint/releases/download/${TFLINT_VERSION}/tflint_linux_amd64.zip" && \
+  unzip /tmp/tflint.zip -d /usr/local/bin && \
+  rm /tmp/tflint.zip
+
 # Install Starship
 RUN wget -q -c https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz -C /usr/local/bin
 
