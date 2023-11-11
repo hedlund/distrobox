@@ -1,36 +1,15 @@
-FROM ubuntu:23.04
-
-# Remove apt configuration optimized for containers
-# Remove docker-gzip-indexes to help with "command-not-found"
-RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-languages
-
-# Enable myhostname nss plugin for clean hostname resolution without patching
-# hosts (at least for sudo), add it right after 'files' entry. We expect that
-# this entry is not present yet. Do this early so that package postinst (which
-# adds it too late in the order) skips this step
-RUN sed -Ei 's/^(hosts:.*)(\<files\>)\s*(.*)/\1\2 myhostname \3/' /etc/nsswitch.conf
-
-# Update the system
-RUN apt-get update -y && apt-get upgrade -y
+FROM ghcr.io/hedlund/ubuntu:latest
 
 # Install extra packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-  ubuntu-minimal \
-  ubuntu-standard \
-  libnss-myhostname \
   ack \
   apt-transport-https \
   ca-certificates \
-  curl \
   direnv \
-  flatpak-xdg-utils \
   jq \
-  git \
   git-lfs \
-  gnupg2 \
   gpg \
   httpie \
-  keyutils \
   nano \
   nodejs \
   npm \
@@ -40,19 +19,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   socat \
   telnet \
   tig \
-  tree \
-  unzip \
   wget \
   whois \
-  xsel \
-  zip \
-  zsh
-
-# Fix empty bind-mount to clear selinuxfs
-RUN mkdir /usr/share/empty
-
-# Add flatpak-spawn to /usr/bin
-RUN ln -s /usr/libexec/flatpak-xdg-utils/flatpak-spawn /usr/bin/
+  xsel
 
 # Install latest Golang
 RUN GO_VERSION=$(curl -s https://go.dev/dl/?mode=json |jq -r '.[0].version') && \

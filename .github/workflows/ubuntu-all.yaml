@@ -1,0 +1,17 @@
+name: build-all-ubuntu-images
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ubuntu/**
+
+jobs:
+  build_ubuntu:
+    uses: ./.github/workflows/build.yml
+    with:
+      image_name: ubuntu
+  build_ubuntubox:
+    uses: ./.github/workflows/build.yml
+    with:
+      image_name: ubuntubox
