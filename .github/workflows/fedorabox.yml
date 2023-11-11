@@ -1,0 +1,20 @@
+name: build-fedorabox
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - fedorabox/**
+  push:
+    branches:
+      - main
+    paths:
+      - fedorabox/**
+  schedule:
+    - cron: "0 0 * * MON"
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      image_name: fedorabox

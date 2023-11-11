@@ -16,3 +16,9 @@ such as `ubuntubox`. It is based on [`toolbx-images/images`](https://github.com/
 ```sh
 distrobox create --name ubuntu --image ghcr.io/hedlund/ubuntubox:latest
 ```
+
+## Fedorabox
+
+```sh
+distrobox create --name fedora --image ghcr.io/hedlund/fedorabox:latest
+```
