@@ -1,18 +1,20 @@
-name: build-ubuntubox
+name: build-fedorabox
 on:
   pull_request:
     branches:
       - main
     paths:
-      - ubuntubox/**
+      - fedorabox/**
   push:
     branches:
       - main
     paths:
-      - ubuntubox/**
+      - fedorabox/**
+  schedule:
+    - cron: "0 0 * * MON"
 
 jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      image_name: ubuntubox
+      image_name: fedorabox

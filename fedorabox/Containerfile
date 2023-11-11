@@ -1,0 +1,3 @@
+FROM quay.io/fedora/fedora-toolbox:39
+
+RUN dnf install -y arm-image-installer
