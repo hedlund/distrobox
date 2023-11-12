@@ -17,6 +17,7 @@ RUN sed -Ei '/apt-get (update|upgrade)/s/^/#/' /usr/local/sbin/unminimize && \
 
 # Install extra packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
+  # These packages are part of a typical toolbox image
   ubuntu-minimal \
   ubuntu-standard \
   libnss-myhostname \
@@ -28,7 +29,28 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
   tree \
   unzip \
   zip \
-  zsh
+  zsh \
+  # These packages are the ones distrobox wants to install on first start
+  bash \
+  bc \
+  dialog \
+  diffutils \
+  findutils \
+  less \
+  libegl1-mesa \
+  libgl1-mesa-glx \
+  libvte-2.9*-common \
+  libvulkan1 \
+  lsof \
+  mesa-vulkan-drivers \
+  ncurses-base \
+  passwd \
+  pinentry-curses \
+  procps \
+  sudo \
+  time \
+  util-linux \
+  wget
 
 # Fix empty bind-mount to clear selinuxfs
 RUN mkdir /usr/share/empty
