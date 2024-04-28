@@ -41,13 +41,6 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
   apt-get update -y && \
   apt-get install -y google-cloud-cli
 
-# Install envchain
-RUN apt-get install -y libreadline-dev libsecret-1-dev && \
-  git clone https://github.com/sorah/envchain.git /tmp/envchain && \
-  (cd /tmp/envchain && make && make install) && \
-  rm -rf /tmp/envchain && \
-  apt-get autoremove -y
-
 # Install tflint
 RUN TFLINT_VERSION=$(curl --fail -s "https://api.github.com/repos/terraform-linters/tflint/releases/latest" | jq -r '.tag_name') && \
   curl --fail -sS -L -o /tmp/tflint.zip "https://github.com/terraform-linters/tflint/releases/download/${TFLINT_VERSION}/tflint_linux_amd64.zip" && \
