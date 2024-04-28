@@ -49,6 +49,9 @@ RUN curl --fail -sS -L -o /tmp/tflint.zip "https://github.com/terraform-linters/
 # Install Starship
 RUN wget -q -c https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz -C /usr/local/bin
 
+# Install Taskfile
+RUN wget -q -c https://github.com/go-task/task/releases/latest/download/task_linux_amd64.tar.gz -O - | tar -xz -C /usr/local/bin
+
 # Since $HOME is mounted to the host system, we'll avoid installing stuff there,
 # and instead do this little ugly thing install n...
 ENV N_PREFIX=/opt/user/n
@@ -56,7 +59,7 @@ ENV PATH=$N_PREFIX/bin:$PATH
 RUN mkdir -p /opt/user/n && \
   npm install -g n && \
   n latest && \
-  npm install -g newman serve yarn @go-task/cli
+  npm install -g newman serve yarn
 
 # ...and the same for installing tfenv
 ENV TFENV_DIR=/opt/user/tfenv
