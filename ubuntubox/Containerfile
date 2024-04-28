@@ -50,16 +50,19 @@ RUN curl --fail -sS -L -o /tmp/tflint.zip "https://github.com/terraform-linters/
 RUN wget -q -c https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-musl.tar.gz -O - | tar -xz -C /usr/local/bin
 
 # Since $HOME is mounted to the host system, we'll avoid installing stuff there,
-# and instead do this little ugly thing
+# and instead do this little ugly thing install n...
 ENV N_PREFIX=/opt/user/n
-ENV TFENV_DIR=/opt/user/tfenv
-ENV PATH=$N_PREFIX/bin:$TFENV_DIR/bin:$PATH
+ENV PATH=$N_PREFIX/bin:$PATH
 RUN mkdir -p /opt/user/n && \
   npm install -g n && \
   n latest && \
-  git clone --depth=1 https://github.com/tfutils/tfenv.git "${TFENV_DIR}" && \
+  npm install -g newman serve yarn @go-task/cli
+
+# ...and the same for installing tfenv
+ENV TFENV_DIR=/opt/user/tfenv
+ENV PATH=$TFENV_DIR/bin:$PATH
+RUN git clone --depth=1 https://github.com/tfutils/tfenv.git "${TFENV_DIR}" && \
   tfenv install latest && \
-  npm install -g newman serve yarn @go-task/cli && \
   chown -R 1000:1000 /opt/user
 
 # Symlink the distrobox host process for relevant commands
