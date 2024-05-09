@@ -7,10 +7,11 @@ RUN sudo apt update && \
   apt-transport-https \
   ca-certificates \
   direnv \
-  jq \
   git-lfs \
   gpg \
   httpie \
+  jq \
+  libwebkit2gtk-4.0-dev \
   nano \
   nodejs \
   npm \
