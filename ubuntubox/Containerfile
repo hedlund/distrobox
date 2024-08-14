@@ -1,4 +1,4 @@
-FROM quay.io/toolbx/ubuntu-toolbox:24.04
+FROM quay.io/toolbx/ubuntu-toolbox:23.10
 
 # Install extra packages
 RUN sudo apt update && \
@@ -11,7 +11,6 @@ RUN sudo apt update && \
   gpg \
   httpie \
   jq \
-  libwebkit2gtk-4.0-dev \
   nano \
   nodejs \
   npm \
