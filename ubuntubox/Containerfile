@@ -11,6 +11,7 @@ RUN sudo apt-get update && \
   gpg \
   httpie \
   jq \
+  lua5.4 liblua5.4-dev \
   nano \
   nodejs \
   npm \
@@ -22,7 +23,12 @@ RUN sudo apt-get update && \
   tig \
   wget \
   whois \
-  xsel
+  xsel \
+  libwebkit2gtk-4.1-dev
+
+# Symlink libwebkit2gtk 4.1 in place of 4.0
+RUN ln -sf /usr/lib/x86_64-linux-gnu/libwebkit2gtk-4.1.so.0 /usr/lib/x86_64-linux-gnu/libwebkit2gtk-4.0.so.37 && \
+  ln -sf /usr/lib/x86_64-linux-gnu/libjavascriptcoregtk-4.1.so.0 /usr/lib/x86_64-linux-gnu/libjavascriptcoregtk-4.0.so.18
 
 # Install latest Golang
 RUN GO_VERSION=$(curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version') && \
@@ -75,3 +81,10 @@ RUN ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker && \
   ln -fs /usr/libexec/flatpak-xdg-utils/flatpak-spawn /usr/bin/flatpak-spawn && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/rpm-ostree
+
+# Install Lua Rocks
+RUN TEMP_DIR=`mktemp -d` && \
+  curl -sL "https://luarocks.org/releases/luarocks-3.11.1.tar.gz" | tar -xz -C "$TEMP_DIR" && \
+  cd "$TEMP_DIR/luarocks-3.11.1" && \
+  ./configure && make && make install && \
+  rm -rf "$TEMP_DIR"
