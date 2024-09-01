@@ -11,6 +11,7 @@ RUN sudo apt-get update && \
   gpg \
   httpie \
   jq \
+  lua5.4 liblua5.4-dev \
   nano \
   nodejs \
   npm \
@@ -80,3 +81,10 @@ RUN ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker && \
   ln -fs /usr/libexec/flatpak-xdg-utils/flatpak-spawn /usr/bin/flatpak-spawn && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \
   ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/rpm-ostree
+
+# Install Lua Rocks
+RUN TEMP_DIR=`mktemp -d` && \
+  curl -sL "https://luarocks.org/releases/luarocks-3.11.1.tar.gz" | tar -xz -C "$TEMP_DIR" && \
+  cd "$TEMP_DIR/luarocks-3.11.1" && \
+  ./configure && make && make install && \
+  rm -rf "$TEMP_DIR"
