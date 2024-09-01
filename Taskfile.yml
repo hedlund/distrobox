@@ -1,0 +1,21 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  build:ubuntu:
+    desc: Build the Ubuntubox image
+    cmds:
+      - podman build . -t ghcr.io/hedlund/ubuntubox
+    dir: ubuntubox
+    silent: true
+  build:fedora:
+    desc: Build the Fedorabox image
+    cmds:
+      - podman build . -t ghcr.io/hedlund/fedorabox
+    dir: fedorabox
+    silent: true
+  default:
+    cmds:
+      - task --list
+    silent: true
