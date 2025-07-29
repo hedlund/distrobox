@@ -17,6 +17,7 @@ RUN sudo apt-get update && \
   nano \
   nodejs \
   npm \
+  pipx \
   protobuf-compiler \
   rsync \
   shellcheck \
